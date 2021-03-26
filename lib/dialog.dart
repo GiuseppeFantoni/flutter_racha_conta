@@ -4,9 +4,15 @@ class AlertaCalculoTotalComBebida extends StatelessWidget {
   final title;
   final valorFinalPessoasQueBeberam;
   final valorFinalPessoasQueNaoBeberam;
+  final gorjeta;
+  final valorTotalDaConta;
 
-  AlertaCalculoTotalComBebida(this.title, this.valorFinalPessoasQueBeberam,
-      this.valorFinalPessoasQueNaoBeberam);
+  AlertaCalculoTotalComBebida(
+      this.title,
+      this.valorFinalPessoasQueBeberam,
+      this.valorFinalPessoasQueNaoBeberam,
+      this.gorjeta,
+      this.valorTotalDaConta);
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +23,8 @@ class AlertaCalculoTotalComBebida extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            Text('Valor Total: $valorTotalDaConta reais'),
+            Text('Valor da gorjeta: $gorjeta reais'),
             Text('Pessoas que beberam: $valorFinalPessoasQueBeberam reais'),
             Text(
                 'Pessoas que não beberam: $valorFinalPessoasQueNaoBeberam reais'),
@@ -37,7 +45,10 @@ class AlertaCalculoTotalComBebida extends StatelessWidget {
 class AlertaCalculoTotalSemBebida extends StatelessWidget {
   final title;
   final valorFinal;
-  AlertaCalculoTotalSemBebida(this.title, this.valorFinal);
+  final gorjeta;
+  final valorTotalDaConta;
+  AlertaCalculoTotalSemBebida(
+      this.title, this.valorFinal, this.gorjeta, this.valorTotalDaConta);
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +59,8 @@ class AlertaCalculoTotalSemBebida extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            Text('Valor Total: $valorTotalDaConta reais'),
+            Text('Valor da gorjeta: $gorjeta reais'),
             Text('Cada um deve pagar: $valorFinal reais'),
           ],
         ),
