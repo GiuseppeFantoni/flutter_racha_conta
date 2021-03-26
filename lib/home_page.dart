@@ -15,7 +15,6 @@ class _HomePageState extends State<HomePage> {
   var numeroPessoasQueBeberam = 0;
   var _currentSliderValue = 10;
 
-
   double tratamentoFloat(String number) {
     if (number == '') return 0.0;
     return double.parse(number.replaceAll(',', '.'));
@@ -30,7 +29,12 @@ class _HomePageState extends State<HomePage> {
     var gorjeta = _currentSliderValue / 100;
     var result = (valorTotalConta / numeroTotalPessoas) * (1 + gorjeta);
 
-    return result.toStringAsFixed(2);
+    return {
+      "valor_a_pagar": result.toStringAsFixed(2),
+      "gorjeta": valorTotalConta * gorjeta,
+      "valor_total_da_conta":
+          (valorTotalConta + valorTotalBebidas) + valorTotalConta * gorjeta
+    };
   }
 
   Map<String, dynamic> calculoComBebida() {
@@ -38,12 +42,15 @@ class _HomePageState extends State<HomePage> {
     var valorDeQuemSohComeu =
         (valorTotalConta / numeroTotalPessoas) * (1 + gorjeta);
     var valorDeQuemComeuBebeu = ((valorTotalBebidas / numeroPessoasQueBeberam) +
-        (valorTotalConta / numeroTotalPessoas)) *
+            (valorTotalConta / numeroTotalPessoas)) *
         (1 + gorjeta);
 
     return {
       "pessoas_que_beberam": valorDeQuemComeuBebeu.toStringAsFixed(2),
-      "pessoas_que_nao_beberam": valorDeQuemSohComeu.toStringAsFixed(2)
+      "pessoas_que_nao_beberam": valorDeQuemSohComeu.toStringAsFixed(2),
+      "gorjeta": (valorTotalConta + valorTotalBebidas) * gorjeta,
+      "valor_total_da_conta": (valorTotalConta + valorTotalBebidas) +
+          (valorTotalConta + valorTotalBebidas) * gorjeta
     };
   }
 
@@ -73,7 +80,11 @@ class _HomePageState extends State<HomePage> {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return AlertaCalculoTotalSemBebida("Total a pagar:", valorFinal);
+            return AlertaCalculoTotalSemBebida(
+                "Total a pagar:",
+                valorFinal["valor_a_pagar"],
+                valorFinal["gorjeta"],
+                valorFinal["valor_total_da_conta"]);
           });
       return;
     }
@@ -105,7 +116,9 @@ class _HomePageState extends State<HomePage> {
           return AlertaCalculoTotalComBebida(
               "Total a pagar:",
               valorFinal['pessoas_que_beberam'],
-              valorFinal['pessoas_que_nao_beberam']);
+              valorFinal['pessoas_que_nao_beberam'],
+              valorFinal['gorjeta'],
+              valorFinal["valor_total_da_conta"]);
         });
     return;
   }
@@ -123,188 +136,188 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             Container(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.fromLTRB(25.0, 0.0, 25.0, 10.0),
-                        child: Text("Digite o Valor da Conta(Sem as bebidas):",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontWeight: FontWeight.w500))),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(25.0, 0.0, 25.0, 0.0),
-                      child: TextField(
-                          decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Icon(
-                                Icons.lunch_dining,
-                                size: 20.0,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            prefixIconConstraints:
-                            BoxConstraints(minWidth: 23, maxHeight: 20),
-                            isDense: true,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                    padding: EdgeInsets.fromLTRB(25.0, 0.0, 25.0, 10.0),
+                    child: Text("Digite o Valor da Conta(S/bebida):",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(fontWeight: FontWeight.w500))),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(25.0, 0.0, 25.0, 0.0),
+                  child: TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Icon(
+                            Icons.lunch_dining,
+                            size: 20.0,
+                            color: Colors.blue,
                           ),
-                          keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'^\d+\,?\d{0,2}')),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              valorTotalConta = tratamentoFloat(value);
-                            });
-                          }),
-                    ),
-                  ],
-                )),
-            Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.fromLTRB(25.0, 15.0, 25.0, 10.0),
-                        child: Text("Digite o Número Total de Pessoas:",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontWeight: FontWeight.w500))),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(25.0, 0.0, 25.0, 0.0),
-                      child: TextField(
-                          decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Icon(
-                                Icons.people_outline_sharp,
-                                size: 20.0,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            prefixIconConstraints:
-                            BoxConstraints(minWidth: 23, maxHeight: 20),
-                            isDense: true,
-                          ),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              numeroTotalPessoas = tratamentoInt(value);
-                            });
-                          }),
-                    ),
-                  ],
-                )),
-            Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.fromLTRB(25.0, 15.0, 25.0, 10.0),
-                        child: Text("Digite o Valor da Conta das Bebidas:",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontWeight: FontWeight.w500))),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(25.0, 0.0, 25.0, 0.0),
-                      child: TextField(
-                          decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Icon(
-                                Icons.local_bar,
-                                size: 20.0,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            prefixIconConstraints:
-                            BoxConstraints(minWidth: 23, maxHeight: 20),
-                            isDense: true,
-                          ),
-                          keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'^\d+\,?\d{0,2}')),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              valorTotalBebidas = tratamentoFloat(value);
-                            });
-                          }),
-                    ),
-                  ],
-                )),
-            Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.fromLTRB(25.0, 15.0, 25.0, 10.0),
-                        child: Text("Digite o Número Total de Pessoas que Beberam:",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontWeight: FontWeight.w500))),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(25.0, 0.0, 25.0, 0.0),
-                      child: TextField(
-                          decoration: InputDecoration(
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Icon(
-                                Icons.people_rounded,
-                                size: 20.0,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            prefixIconConstraints:
-                            BoxConstraints(minWidth: 23, maxHeight: 20),
-                            isDense: true,
-                          ),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              numeroPessoasQueBeberam = tratamentoInt(value);
-                            });
-                          }),
-                    ),
-                  ],
-                )),
-            Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.fromLTRB(25.0, 10.0, 15.0, 0.0),
-                        child: Text("Informe a Porcentagem da Gorjeta:",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontWeight: FontWeight.w500))),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-                      child: SliderTheme(
-                        data: SliderThemeData(
-                          trackHeight: 1.5,
                         ),
-                        child: Slider(
-                            activeColor: Colors.pink,
-                            inactiveColor: Colors.grey[200],
-                            max: 100,
-                            min: 0,
-                            divisions: 20,
-                            value: _currentSliderValue.toDouble(),
-                            label: _currentSliderValue.round().toString(),
-                            onChanged: (value) {
-                              setState(() {
-                                _currentSliderValue = value.toInt();
-                              });
-                            }),
+                        prefixIconConstraints:
+                            BoxConstraints(minWidth: 23, maxHeight: 20),
+                        isDense: true,
                       ),
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d+\,?\d{0,2}')),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          valorTotalConta = tratamentoFloat(value);
+                        });
+                      }),
+                ),
+              ],
+            )),
+            Container(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                    padding: EdgeInsets.fromLTRB(25.0, 15.0, 25.0, 10.0),
+                    child: Text("Digite o Número Total de Pessoas(S/bebida):",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(fontWeight: FontWeight.w500))),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(25.0, 0.0, 25.0, 0.0),
+                  child: TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Icon(
+                            Icons.people_outline_sharp,
+                            size: 20.0,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        prefixIconConstraints:
+                            BoxConstraints(minWidth: 23, maxHeight: 20),
+                        isDense: true,
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          numeroTotalPessoas = tratamentoInt(value);
+                        });
+                      }),
+                ),
+              ],
+            )),
+            Container(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                    padding: EdgeInsets.fromLTRB(25.0, 15.0, 25.0, 10.0),
+                    child: Text("Digite o Valor da Conta das Bebidas:",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(fontWeight: FontWeight.w500))),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(25.0, 0.0, 25.0, 0.0),
+                  child: TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Icon(
+                            Icons.local_bar,
+                            size: 20.0,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        prefixIconConstraints:
+                            BoxConstraints(minWidth: 23, maxHeight: 20),
+                        isDense: true,
+                      ),
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d+\,?\d{0,2}')),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          valorTotalBebidas = tratamentoFloat(value);
+                        });
+                      }),
+                ),
+              ],
+            )),
+            Container(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                    padding: EdgeInsets.fromLTRB(25.0, 15.0, 25.0, 10.0),
+                    child: Text("Digite o Número Total de Pessoas que Beberam:",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(fontWeight: FontWeight.w500))),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(25.0, 0.0, 25.0, 0.0),
+                  child: TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Icon(
+                            Icons.people_rounded,
+                            size: 20.0,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        prefixIconConstraints:
+                            BoxConstraints(minWidth: 23, maxHeight: 20),
+                        isDense: true,
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          numeroPessoasQueBeberam = tratamentoInt(value);
+                        });
+                      }),
+                ),
+              ],
+            )),
+            Container(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                    padding: EdgeInsets.fromLTRB(25.0, 10.0, 15.0, 0.0),
+                    child: Text("Informe a Porcentagem da Gorjeta:",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(fontWeight: FontWeight.w500))),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+                  child: SliderTheme(
+                    data: SliderThemeData(
+                      trackHeight: 1.5,
                     ),
-                  ],
-                )),
+                    child: Slider(
+                        activeColor: Colors.pink,
+                        inactiveColor: Colors.grey[200],
+                        max: 100,
+                        min: 0,
+                        divisions: 20,
+                        value: _currentSliderValue.toDouble(),
+                        label: _currentSliderValue.round().toString(),
+                        onChanged: (value) {
+                          setState(() {
+                            _currentSliderValue = value.toInt();
+                          });
+                        }),
+                  ),
+                ),
+              ],
+            )),
             ElevatedButton(
               onPressed: () {
                 showDialogs();
@@ -313,7 +326,7 @@ class _HomePageState extends State<HomePage> {
               style: ElevatedButton.styleFrom(
                   primary: Colors.blue,
                   textStyle:
-                  TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             )
           ],
         ),
