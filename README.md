@@ -4,4 +4,4 @@ A new Flutter application.
 
 ## Getting Started
 
-Link do YT:
+Link do YT: https://www.youtube.com/watch?v=fUctGreMF0Y
