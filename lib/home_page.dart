@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     return int.parse(number);
   }
 
-  dynamic calculoSemBebida() {
+  Map<String, dynamic> calculoSemBebida() {
     var gorjeta = _currentSliderValue / 100;
     var result = (valorTotalConta / numeroTotalPessoas) * (1 + gorjeta);
 
@@ -34,6 +34,21 @@ class _HomePageState extends State<HomePage> {
       "gorjeta": valorTotalConta * gorjeta,
       "valor_total_da_conta":
           (valorTotalConta + valorTotalBebidas) + valorTotalConta * gorjeta
+    };
+  }
+
+  Map<String, dynamic> calculoTodosBeberam() {
+    var gorjeta = _currentSliderValue / 100;
+    var valorDeQuemComeuBebeu = ((valorTotalBebidas / numeroPessoasQueBeberam) +
+            (valorTotalConta / numeroTotalPessoas)) *
+        (1 + gorjeta);
+
+    return {
+      "valor_a_pagar": valorDeQuemComeuBebeu.toStringAsFixed(2),
+      "gorjeta": (valorTotalConta + valorTotalBebidas) * gorjeta,
+      "valor_total_da_conta":
+          ((valorTotalConta + valorTotalBebidas) * (1 + gorjeta))
+              .toStringAsFixed(2)
     };
   }
 
@@ -105,6 +120,30 @@ class _HomePageState extends State<HomePage> {
           builder: (BuildContext context) {
             return AlertaCampoInvalido("Campo Invalido:",
                 "Favor verificar o número total de pessoas que beberam");
+          });
+      return;
+    }
+
+    if (numeroTotalPessoas < numeroPessoasQueBeberam) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertaCampoInvalido("Campo Invalido:",
+                "O número de pessoas que beberam deve ser menor que o número total de pessoas");
+          });
+      return;
+    }
+
+    if (numeroPessoasQueBeberam == numeroTotalPessoas) {
+      var valorFinal = calculoTodosBeberam();
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertaCalculoTotalSemBebida(
+                "Total a pagar:",
+                valorFinal["valor_a_pagar"],
+                valorFinal["gorjeta"],
+                valorFinal["valor_total_da_conta"]);
           });
       return;
     }
