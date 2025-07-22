@@ -23,7 +23,7 @@ class AlertaCalculoTotalComBebida extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Valor Total: $valorTotalDaConta reais'),
+            Text('Valor Totsal: $valorTotalDaConta reais'),
             Text('Valor da gorjeta: $gorjeta reais'),
             Text('Pessoas que beberam: $valorFinalPessoasQueBeberam reais'),
             Text(
